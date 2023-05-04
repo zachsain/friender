@@ -8,12 +8,13 @@ import SwipeButtons from './SwipeButtons';
 import Chats from './Chats';
 import ChatScreen from './ChatScreen';
 import Signup from './Signup';
-
+import CreateProfile from './CreateProfile';
 function App() {
   return (
     <div className="App">
       {/* <Header/> */}
       <Signup />
+      <CreateProfile />
       {/* <Switch>
       <Route path = "/chat/:person">
           <Header backButton="/chat" /> 

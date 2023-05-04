@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { auth, db, createUserWithEmailAndPassword } from './firebase';
-// import { auth, db, createUser } from './fb';
+import { auth, db, googleProvider } from './firebase';
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+} from "firebase/auth";
 import { collection, addDoc } from "firebase/firestore"; 
 import './Signup.css';
 
@@ -12,36 +16,45 @@ function Signup() {
   const [lastName, setLastName] = useState('')
   const [error, setError] = useState('');
   
+  console.log(auth.currentUser)
+
+  console.log(auth?.currentUser?.email) // waits to check login
+
   const handleSignup = async (event) => {
     event.preventDefault();
     try {
-    // Create new user with email and password
-    //   const { user } = await auth.createUserWithEmailAndPassword(email, password);
-      const { user } = await createUserWithEmailAndPassword(email, password);
+      const { user } = await createUserWithEmailAndPassword(auth, email, password);
       
-      // Add user to "users" collection with user's information
-
-    //   await db.collection("users").doc(user.uid).set({
+    //   await addDoc(collection(db, "users"), {
     //     email: user.email,
     //     firstName: firstName,
     //     lastName: lastName,
     //     createdAt: new Date(),
-    //   });
-      
-      await addDoc(collection(db, "users"), {
-        email: user.email,
-        firstName: firstName,
-        lastName: lastName,
-        password: password,
-        createdAt: new Date(),
-      }).then((docRef) => {
-        console.log("Document written with ID: ", docRef.id);
-    })
+    //   }).then((docRef) => {
+    //     console.log("Document written with ID: ", docRef.id);
+    // })
 
     } catch (error) {
       setError(error.message);
     }
   };
+
+  const signInWithGoogle = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
 
   return (
     <div className="signup-container">
@@ -80,6 +93,8 @@ function Signup() {
         </button>
         {error && <p className="signup-error">{error}</p>}
       </form>
+      <button onClick={signInWithGoogle}>Sign In With Google</button>
+      <button onClick={logout}> Logout </button>
     </div>
   );
 };
