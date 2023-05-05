@@ -5,47 +5,54 @@ import {
   signInWithPopup,
   signOut,
 } from "firebase/auth";
-import { collection, addDoc } from "firebase/firestore"; 
-import './Signup.css';
+import { collection, addDoc } from "firebase/firestore";
+// import {
+//     getDocs,
+//     collection,
+//     addDoc,
+//     deleteDoc,
+//     updateDoc,
+//     doc,
+//   } from "firebase/firestore"; 
 
-function Signup() {
+import './SignupForm.css';
+
+function SignupForm({loginOrSignup, setLoginOrSignup}) {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [error, setError] = useState('');
+  const [bio, setBio] = useState('')
+  const userCollectionRef = collection(db, 'users');
   
-  console.log(auth.currentUser)
-
   console.log(auth?.currentUser?.email) // waits to check login
 
   const handleSignup = async (event) => {
     event.preventDefault();
     try {
       const { user } = await createUserWithEmailAndPassword(auth, email, password);
-      
-    //   await addDoc(collection(db, "users"), {
-    //     email: user.email,
-    //     firstName: firstName,
-    //     lastName: lastName,
-    //     createdAt: new Date(),
-    //   }).then((docRef) => {
-    //     console.log("Document written with ID: ", docRef.id);
-    // })
 
+      await addDoc(userCollectionRef, {
+        firstName: firstName, 
+        lastName: lastName,
+        email: email,
+        id: user.uid
+    })
+      
     } catch (error) {
       setError(error.message);
     }
   };
 
-  const signInWithGoogle = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+//   const signInWithGoogle = async () => {
+//     try {
+//       await signInWithPopup(auth, googleProvider);
+//     } catch (err) {
+//       console.error(err);
+//     }
+//   };
 
   const logout = async () => {
     try {
@@ -58,7 +65,7 @@ function Signup() {
 
   return (
     <div className="signup-container">
-      <form className="signup-form" onSubmit={handleSignup}>
+      <form className="signup-form" >
         <h2 className="signup-heading">Sign up</h2>
         <input
           type="text"
@@ -88,15 +95,27 @@ function Signup() {
           onChange={(event) => setPassword(event.target.value)}
           className="signup-input"
         />
-        <button type="submit" className="signup-button">
+         <input
+          type="bio"
+          placeholder="Bio"
+          value={bio}
+          onChange={(event) => setBio(event.target.value)}
+          className="signup-input"
+        />
+        <button type="submit" className="signup-button" onClick={handleSignup}>
           Sign up
+        </button>
+        <h4>Already have an account?</h4>
+        <button onClick={() => setLoginOrSignup(true)} type="submit" className="signup-button">
+          Login
         </button>
         {error && <p className="signup-error">{error}</p>}
       </form>
-      <button onClick={signInWithGoogle}>Sign In With Google</button>
+
+        
       <button onClick={logout}> Logout </button>
     </div>
   );
 };
 
-export default Signup;
+export default SignupForm;

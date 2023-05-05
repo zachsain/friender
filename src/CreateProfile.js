@@ -1,5 +1,5 @@
 import React, { useEffect, useState }  from 'react'
-import Signup from "./Signup";
+import Signup from "./SignupForm";
 import { db, auth, storage } from "./firebase";
 import {
   getDocs,
@@ -10,7 +10,7 @@ import {
   doc,
 } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
-import './Signup.css'
+import './SignupForm.css'
 
 function CreateProfile() {
 
